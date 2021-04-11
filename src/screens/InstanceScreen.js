@@ -6,7 +6,7 @@ const InstanceScreen = (props) => {
 
   //console.log(props.instance);
 
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([[]]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,19 +16,20 @@ const InstanceScreen = (props) => {
 
       await health.get('/api/datasources/proxy/1/api/v1/query_range', {
         params: { 
-          probe_success: "probe_success{instance=~" + props.instance + "}",
+          probe_success: "{instance=~" + props.instance + "}",
           start: Date.parse(time),
           end: Date.parse(new Date())
         }})
         .then((res) => {
           setResults(res.data.data.result[0].values);
+          //console.log(res.data.data.result[0].values[0]);
         })
         .catch((e) => console.error(e));
         
     };
     
     fetchData();
-  }, []);
+  }, [results]);
 
   const statusColor = (status) => {
     //console.log(status);
@@ -37,18 +38,18 @@ const InstanceScreen = (props) => {
         flex: 1,
         backgroundColor: '#4caf50',
         color: '#ffffff',
-        padding: 20,
-        marginVertical: 6,
-        marginHorizontal: 12
+        padding: 8,
+        marginVertical: 5,
+        marginHorizontal: 10
           }
     } else {
       return {
         flex: 1,
         backgroundColor: '#FF0000',
         color: '#ffffff',
-        padding: 20,
-        marginVertical: 6,
-        marginHorizontal: 12
+        padding: 8,
+        marginVertical: 5,
+        marginHorizontal: 10
       }
     }
   }
@@ -56,7 +57,6 @@ const InstanceScreen = (props) => {
   return (
     <View style={statusColor(results[0][1])}>
         <Text style={styles.item}>{props.instance}</Text>
-        <Text style={styles.item}>{results[0][1]}</Text>
     </View>
   );
 }
